@@ -1,0 +1,31 @@
+name: Citizen Brief
+
+on:
+  workflow_dispatch:
+  # --- LIVE CRON — uncomment after Josh's go + secrets set ---
+  # schedule runs 6:00 AM Pacific, Monday–Saturday.
+  # 14:00 UTC = 6:00 AM PST (winter). During daylight time (PDT, UTC-7)
+  # 6:00 AM is 13:00 UTC — the hour shifts by one in summer.
+  # schedule:
+  #   - cron: '0 14 * * 1-6'
+
+jobs:
+  post-brief:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Post today's brief
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          BRIEF_BOT_TOKEN: ${{ secrets.BRIEF_BOT_TOKEN }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+        run: python3 scripts/post_brief.py
